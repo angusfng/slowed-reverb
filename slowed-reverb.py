@@ -13,7 +13,8 @@ def main():
     # Get the file paths from arguments
     audio = sys.argv[1]
     gif = sys.argv[2]
-    # Converting webp to gif
+
+    # Handling webp to gif
     if gif.endswith(".webp"):
         print("Converting webp to gif")
         im = Image.open(gif)
@@ -26,7 +27,7 @@ def main():
     mp3 = MP3File(audio)
     tags = mp3.get_tags()
     tags = tags["ID3TagV1"]
-    title = tags["artist"] + " - " + tags["song"] + " (Slowed + Reverb)"
+    title = tags["artist"] + " - " + tags["song"] + " (slowed + reverb)"
 
     # Path to put final mp4
     outputPath = "output/a.mp4"
@@ -51,32 +52,27 @@ def main():
     print("Performing slow reverb")
     fx(audio, audioPath)
 
-    print("Getting slow reverb")
     # Get the slowed reverb audio mp3
     audioClip = mp.AudioFileClip(audioPath)
 
-    print("Getting gif")
     # Get the gif
     videoClip = mp.VideoFileClip(gif)
 
-    print("Inserting gif loops")
     # Calculate number of time it needs to loop and put into video
     numLoops = math.ceil(audioClip.duration / videoClip.duration)
     videoClip2 = videoClip.loop(n=numLoops)
-    #videoClip2.resize( (1920,1080) )
 
-    print("Inserting audio")
     # Put in the slowed reverb audio
     videoClip3 = videoClip2.set_audio(audioClip)
 
     print("Creating mp4")
     # Write out to mp4 in output file
-    videoClip3.write_videofile(outputPath, verbose=False, logger=None, bitrate="12000k")
+    videoClip3.write_videofile(outputPath, verbose=False, logger=None)
     print("Video created")
     print(title)
 
     # Move to old audio and gif file
-    os.rename(audio, "oldaudio/{}".format(audio))
+    #os.remove(audio)
     if moved == 0:
         os.rename(gif, "oldgif/{}".format(gif))
 
